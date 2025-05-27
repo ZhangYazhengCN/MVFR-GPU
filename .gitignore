@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# remove vcpkg_installed, MVFR-GPU directories and .editorconfig, LICENSE.txt, MVFR-CPU.* files
+vcpkg_installed/
+MVFR-GPU/
+.editorconfig
+LICENSE.txt
+MVFR-GPU.*

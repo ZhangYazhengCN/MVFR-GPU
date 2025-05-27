@@ -1,8 +1,0 @@
-get_filename_component(VCPKG_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
-include(CMakeFindDependencyMacro)
-set(metis_DIR "${VCPKG_IMPORT_PREFIX}/share/metis")
-find_dependency(metis)
-if(NOT TARGET METIS::all_libs)
-  add_library(METIS::all_libs  INTERFACE  IMPORTED  GLOBAL)
-  target_link_libraries(METIS::all_libs  INTERFACE  metis)
-endif()

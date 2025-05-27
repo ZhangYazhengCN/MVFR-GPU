@@ -1,8 +1,0 @@
-get_filename_component(VCPKG_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
-include(CMakeFindDependencyMacro)
-set(netCDF_DIR "${VCPKG_IMPORT_PREFIX}/share/netcdf")
-find_dependency(netCDF)
-if(NOT TARGET Netcdf::all_libs)
-  add_library(Netcdf::all_libs  INTERFACE  IMPORTED  GLOBAL)
-  target_link_libraries(Netcdf::all_libs  INTERFACE  netCDF::netcdf)
-endif()

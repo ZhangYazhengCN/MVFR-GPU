@@ -1,8 +1,0 @@
-get_filename_component(VCPKG_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
-include(CMakeFindDependencyMacro)
-set(HDF5_DIR "${VCPKG_IMPORT_PREFIX}/share/hdf5")
-find_dependency(HDF5)
-if(NOT TARGET HDF5::all_libs)
-  add_library(HDF5::all_libs  INTERFACE  IMPORTED  GLOBAL)
-  target_link_libraries(HDF5::all_libs  INTERFACE  hdf5::hdf5)
-endif()

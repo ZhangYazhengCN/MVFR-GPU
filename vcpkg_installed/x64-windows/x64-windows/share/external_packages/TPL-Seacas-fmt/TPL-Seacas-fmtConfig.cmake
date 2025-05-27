@@ -1,8 +1,0 @@
-get_filename_component(VCPKG_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_DIR}/../../../" ABSOLUTE)
-include(CMakeFindDependencyMacro)
-set(fmt_DIR "${VCPKG_IMPORT_PREFIX}/share/fmt")
-find_dependency(fmt)
-if(NOT TARGET fmt::all_libs)
-  add_library(fmt::all_libs  INTERFACE  IMPORTED  GLOBAL)
-  target_link_libraries(fmt::all_libs  INTERFACE  fmt::fmt)
-endif()

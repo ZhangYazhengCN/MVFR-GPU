@@ -50,7 +50,7 @@ To repeat this experiment, please configure the 3DMatch sub-dataset according to
 > ├── gt.log
 > └── gt.info
 
-And execute the ICPCuda executable with the appropriate command-line arguments: `./ICPCuda.exe -d DATASET_PATH`.
+And execute the ICPCuda executable with appropriate command-line options: `./ICPCuda.exe -d DATASET_PATH`.
 
 ### 3.2 MSTRegistration experiment
 

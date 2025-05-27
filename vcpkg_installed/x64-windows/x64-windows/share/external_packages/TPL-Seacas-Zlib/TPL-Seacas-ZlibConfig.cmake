@@ -1,6 +1,0 @@
-include(CMakeFindDependencyMacro)
-find_dependency(ZLIB)
-if(NOT TARGET Zlib::all_libs)
-  add_library(Zlib::all_libs  INTERFACE  IMPORTED  GLOBAL)
-  target_link_libraries(Zlib::all_libs  INTERFACE  ZLIB::ZLIB)
-endif()
