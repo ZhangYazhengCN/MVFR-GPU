@@ -6,10 +6,10 @@
 
 ## Contents
 
-1. [Introduction]()
-2. [Environment]()
-3. [Experiment]()
-4. [Future]()
+1. [Introduction](#1-introduction)
+2. [Environment](#2-environment)
+3. [Experiment](#3-experiments)
+4. [Future](#4-future)
 
 ## 1. Introduction
 
@@ -41,14 +41,14 @@ Compare **ICP-GPU** with **ICP-CPU**(PCL Implementation) based on [3DMatch](http
 
 To repeat this experiment, please configure the 3DMatch sub-dataset according to the following structure (using **7-scenes-redkitchen** as an example):
 
-> 7-scenes-redkitchen/
-> ├── data/
-> │   ├── cloud_bin_0.ply
-> │   ├── cloud_bin_1.ply
-> │   ├── ...
-> │   └── cloud_bin_59.ply
-> ├── gt.log
-> └── gt.info
+📦7-scenes-redkitchen<br>
+ ┣ 📂data<br>
+ ┃ ┣ 📜cloud_bin_0.ply<br>
+ ┃ ┣ 📜cloud_bin_1.ply<br>
+ ┃ ┣ 📜...<br>
+ ┃ ┣ 📜cloud_bin_59.ply<br>
+ ┣ 📜gt.info<br>
+ ┗ 📜gt.log<br>
 
 And execute the ICPCuda executable with appropriate command-line options: `./ICPCuda.exe -d DATASET_PATH`.
 
