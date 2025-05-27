@@ -1,0 +1,154 @@
+{
+  "$schema": "https://raw.githubusercontent.com/spdx/spdx-spec/v2.2.1/schemas/spdx-schema.json",
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentNamespace": "https://spdx.org/spdxdocs/verdict-x64-windows-1.4.0-c0092bb3-a1dc-4287-990b-90de3a26debc",
+  "name": "verdict:x64-windows@1.4.0 1228096ecdad7f3d5b0ef413412e7c68c0cc857d3175ed3db1367b6cf237511d",
+  "creationInfo": {
+    "creators": [
+      "Tool: vcpkg-2025-02-11-bec4296bf5289dc9ce83b4f5095943e44162f9c2"
+    ],
+    "created": "2025-05-25T10:36:53Z"
+  },
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "GENERATES",
+      "relatedSpdxElement": "SPDXRef-binary"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-2"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-3"
+    },
+    {
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-0",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-1",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-2",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-3",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    }
+  ],
+  "packages": [
+    {
+      "name": "verdict",
+      "SPDXID": "SPDXRef-port",
+      "versionInfo": "1.4.0",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@dc33a2fb229de296ae77638542f91d5bb1d63e69",
+      "homepage": "https://github.com/sandialabs/verdict",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "Compute quality functions of 2 and 3-dimensional regions.",
+      "comment": "This is the port (recipe) consumed by vcpkg."
+    },
+    {
+      "name": "verdict:x64-windows",
+      "SPDXID": "SPDXRef-binary",
+      "versionInfo": "1228096ecdad7f3d5b0ef413412e7c68c0cc857d3175ed3db1367b6cf237511d",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "This is a binary package built by vcpkg."
+    },
+    {
+      "SPDXID": "SPDXRef-resource-0",
+      "name": "sandialabs/verdict",
+      "downloadLocation": "git+https://github.com/sandialabs/verdict@fb582cf4fc04ecbd2bf423554325bda01231227a",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "137a386a6c11bf2738d752f995a8cf66661efedab72980a787893f8594066197dd8a966ed906d0d8b95cb05a2ec1b8e95906bb9214cf05604058719798ce7dbd"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/dc33a2fb229de296ae77638542f91d5bb1d63e69/fix_osx.patch",
+      "SPDXID": "SPDXRef-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "f400f7d1f2baf4f9b9b8f2449f90c785405fece50e9ce9fd49d8a73726fb2b65"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/dc33a2fb229de296ae77638542f91d5bb1d63e69/include.patch",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5ea67455cdc7d0abdf7b9790cad1c04f88f7cb863fd243a6a701e76431e554bd"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/dc33a2fb229de296ae77638542f91d5bb1d63e69/portfile.cmake",
+      "SPDXID": "SPDXRef-file-2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "47a28edc080487c8bb6fef808978ff61ad4f6f7f9db2a2358fc263c2acd1f671"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/dc33a2fb229de296ae77638542f91d5bb1d63e69/vcpkg.json",
+      "SPDXID": "SPDXRef-file-3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fe64441c97912fe06872a04dc9fe1c34b28fed584b6987bbd9b85190520ac9f1"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}

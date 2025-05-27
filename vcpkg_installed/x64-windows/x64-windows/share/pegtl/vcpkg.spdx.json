@@ -1,0 +1,110 @@
+{
+  "$schema": "https://raw.githubusercontent.com/spdx/spdx-spec/v2.2.1/schemas/spdx-schema.json",
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentNamespace": "https://spdx.org/spdxdocs/pegtl-x64-windows-3.2.8-d66bc51d-d78c-4a75-af2c-9bf13b5d0aeb",
+  "name": "pegtl:x64-windows@3.2.8 100b9d8316c330d814287641eb8683f0a9be1abfa97d8eee53d3ce1c51f8613b",
+  "creationInfo": {
+    "creators": [
+      "Tool: vcpkg-2025-02-11-bec4296bf5289dc9ce83b4f5095943e44162f9c2"
+    ],
+    "created": "2025-05-25T10:37:09Z"
+  },
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "GENERATES",
+      "relatedSpdxElement": "SPDXRef-binary"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-0",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-1",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    }
+  ],
+  "packages": [
+    {
+      "name": "pegtl",
+      "SPDXID": "SPDXRef-port",
+      "versionInfo": "3.2.8",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@a26e3e871ca672ff3c3b6add5f23d485612bfd73",
+      "homepage": "https://github.com/taocpp/PEGTL",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "The Parsing Expression Grammar Template Library (PEGTL) is a zero-dependency C++ header-only parser combinator library for creating parsers according to a Parsing Expression Grammar (PEG).",
+      "comment": "This is the port (recipe) consumed by vcpkg."
+    },
+    {
+      "name": "pegtl:x64-windows",
+      "SPDXID": "SPDXRef-binary",
+      "versionInfo": "100b9d8316c330d814287641eb8683f0a9be1abfa97d8eee53d3ce1c51f8613b",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "This is a binary package built by vcpkg."
+    },
+    {
+      "SPDXID": "SPDXRef-resource-0",
+      "name": "taocpp/pegtl",
+      "downloadLocation": "git+https://github.com/taocpp/pegtl@3.2.8",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "aecf9396edbdd65549603484d1841cd676b197d164ee2979ee5acaf657da4fa9ebc1a59fc8550cfa440ce27794cdc59cdf86a6521e4bda084c0600cb2c92f5cf"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/a26e3e871ca672ff3c3b6add5f23d485612bfd73/portfile.cmake",
+      "SPDXID": "SPDXRef-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5da690f2a9179b2f1a9fd280e722bdbcfa524209722898d8d95c33e0a28d640f"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/a26e3e871ca672ff3c3b6add5f23d485612bfd73/vcpkg.json",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "0a131bf56dc0f9cbe66e310e4ad37b6aac731a6af5e2331a8e1b73e27311636b"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}

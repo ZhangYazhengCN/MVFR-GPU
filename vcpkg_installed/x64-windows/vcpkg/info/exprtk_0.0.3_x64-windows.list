@@ -1,0 +1,8 @@
+x64-windows/
+x64-windows/include/
+x64-windows/include/exprtk.hpp
+x64-windows/share/
+x64-windows/share/exprtk/
+x64-windows/share/exprtk/copyright
+x64-windows/share/exprtk/vcpkg.spdx.json
+x64-windows/share/exprtk/vcpkg_abi_info.txt

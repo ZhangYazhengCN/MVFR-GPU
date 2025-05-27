@@ -1,0 +1,13 @@
+{
+  "name":"mvfr-gpu",
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "description":"GPU-accelerated multi-view point cloud fine registration library",
+  "homepage": "https://github.com/ZhangYazhengCN/MVFR-GPU",
+  "license":"MIT",
+  "dependencies":[
+      {
+      "name": "pcl",
+      "features":["cuda", "vtk"]
+      }
+  ]
+}

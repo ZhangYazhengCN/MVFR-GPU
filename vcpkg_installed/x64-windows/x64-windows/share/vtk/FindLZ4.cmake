@@ -1,0 +1,5 @@
+find_package(LZ4 NAMES lz4 REQUIRED)
+if(NOT TARGET LZ4::LZ4)
+    add_library(LZ4::LZ4 INTERFACE IMPORTED)
+    target_link_libraries(LZ4::LZ4 INTERFACE lz4::lz4)
+endif()

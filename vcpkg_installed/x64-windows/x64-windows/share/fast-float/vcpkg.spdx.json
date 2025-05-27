@@ -1,0 +1,132 @@
+{
+  "$schema": "https://raw.githubusercontent.com/spdx/spdx-spec/v2.2.1/schemas/spdx-schema.json",
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentNamespace": "https://spdx.org/spdxdocs/fast-float-x64-windows-8.0.0#1-49bf2490-e0d1-451c-af06-7043481a5ecb",
+  "name": "fast-float:x64-windows@8.0.0#1 2076196bf5bdf21eb0454fefd8b577276c4513a1e68f57b391846e7f79fe72b6",
+  "creationInfo": {
+    "creators": [
+      "Tool: vcpkg-2025-02-11-bec4296bf5289dc9ce83b4f5095943e44162f9c2"
+    ],
+    "created": "2025-05-25T10:45:57Z"
+  },
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "GENERATES",
+      "relatedSpdxElement": "SPDXRef-binary"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-2"
+    },
+    {
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-0",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-1",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-2",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    }
+  ],
+  "packages": [
+    {
+      "name": "fast-float",
+      "SPDXID": "SPDXRef-port",
+      "versionInfo": "8.0.0#1",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@3a1900c1798acfdd140767b5491d6f1b151ea071",
+      "homepage": "https://github.com/fastfloat/fast_float",
+      "licenseConcluded": "Apache-2.0 OR BSL-1.0 OR MIT",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "Fast and exact implementation of the C++ from_chars functions for float and double types: 4x faster than strtod",
+      "comment": "This is the port (recipe) consumed by vcpkg."
+    },
+    {
+      "name": "fast-float:x64-windows",
+      "SPDXID": "SPDXRef-binary",
+      "versionInfo": "2076196bf5bdf21eb0454fefd8b577276c4513a1e68f57b391846e7f79fe72b6",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "Apache-2.0 OR BSL-1.0 OR MIT",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "This is a binary package built by vcpkg."
+    },
+    {
+      "SPDXID": "SPDXRef-resource-0",
+      "name": "fastfloat/fast_float",
+      "downloadLocation": "git+https://github.com/fastfloat/fast_float@v8.0.0",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "b4cf0a4802fa26eba2cd371b243bf8f9b662019c957d6f50b43e23937fac06845a9d10db0d4381e74549712237a00c0cfbfc7483d3bdb1a9d3b2185f8a62ad25"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/3a1900c1798acfdd140767b5491d6f1b151ea071/portfile.cmake",
+      "SPDXID": "SPDXRef-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "36b9c924d64e7f7170c73b19269d0e2d05c16b63371390e3d6ceb6c6493c916b"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/3a1900c1798acfdd140767b5491d6f1b151ea071/usage",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "050e81772ad002aabe47b8f905e293fdb1aacb390e262d6fbfaa5fbfec6da6e4"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/25615/AppData/Local/vcpkg/registries/git-trees/3a1900c1798acfdd140767b5491d6f1b151ea071/vcpkg.json",
+      "SPDXID": "SPDXRef-file-2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6465cac0c76ad35eb1d84db7f09624ec9ea7402c22ef9638acd0fe827e41cf2f"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}
