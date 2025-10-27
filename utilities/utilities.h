@@ -262,7 +262,7 @@ namespace mvfr
 		Eigen::Transform<Scalar, 3, Eigen::Isometry> calcu_trans(cal);
 		Eigen::Transform<Scalar, 3, Eigen::Isometry> indeed_trans(gth);
 
-		return { std::acos(((indeed_trans.rotation() * calcu_trans.rotation().inverse()).trace() - 1) / 2),
+		return { std::acos(((indeed_trans.rotation() * calcu_trans.rotation().transpose()).trace() - 1) / 2),
 			(indeed_trans.translation() - calcu_trans.translation()).norm() };
 	}
 

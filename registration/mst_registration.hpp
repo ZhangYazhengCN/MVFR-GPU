@@ -138,7 +138,7 @@ namespace mvfr
 						if (cur_tgt_id != 0)
 						{
 							pcl::transformPointCloud(*cloud_temp, *cloud_temp, transforms_[cur_tgt_id - 1]);
-							transforms_[i - 1] = registration_->getFinalTransformation() * transforms_[cur_tgt_id - 1];
+							transforms_[i - 1] =  transforms_[cur_tgt_id - 1] * registration_->getFinalTransformation();
 						}
 						else
 							transforms_[i - 1] = registration_->getFinalTransformation();
@@ -172,11 +172,11 @@ namespace mvfr
 			unsigned counter = 0;
 			while (boost::num_edges(*graph_) != 0)
 			{
-				std::cout << "############################### 第" << ++counter << "次配准#####################################\n";
+				//std::cout << "############################### 第" << ++counter << "次配准#####################################\n";
 
-				std::cout << "\n\n";
-				printGraph();
-				std::cout << "\n\n";
+				//std::cout << "\n\n";
+				//printGraph();
+				//std::cout << "\n\n";
 
 
 				// 2.1 寻找目前重叠率最大的边
@@ -222,7 +222,7 @@ namespace mvfr
 				// 然后将 vertex_src 融合到 vertex_tgt 内
 				for (auto&& id_temp : (*graph_)[vertex_src].joint_clouds_id)			// 更新源点云变换位姿, 并将其编号加入目标已连接点云中
 				{
-					transforms_[id_temp - 1] = transforms_[id_temp - 1] * registration_->getFinalTransformation();
+                    transforms_[id_temp - 1] =  registration_->getFinalTransformation() * transforms_[id_temp - 1];
 
 					(*graph_)[vertex_tgt].joint_clouds_id.push_back(id_temp);
 				}

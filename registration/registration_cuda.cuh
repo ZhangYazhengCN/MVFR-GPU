@@ -16,6 +16,14 @@
 
 #include "../utilities/types.h"
 
+
+#ifdef MVFR_GPU_EXPORTS
+#define MVFR_GPU_API __declspec(dllexport)
+#else
+#define MVFR_GPU_API __declspec(dllimport)
+#endif
+
+
 namespace mvfr
 {
 	/**
@@ -37,8 +45,8 @@ namespace mvfr
 	 *  @param[in]  th               距离平方的阈值
 	 *  @retval						 筛选后对应关系的数量
 	 */
-	unsigned correspondencesDeviceRejector(const IndicesDevice& indices_device, const DistancesDevice& distances_device,
-		CorrespondencesDevice& corr_device, const float th);
+    MVFR_GPU_API unsigned correspondencesDeviceRejector(const IndicesDevice& indices_device,const DistancesDevice& distances_device,
+        CorrespondencesDevice& corr_device,const float th);
 
 	/**
 	 *  @brief  基于源点云与目标点云的对应关系计算H矩阵，\f(H = (source-centroid_{src})[corr_{src}]*((target-centroid_{tgt})[corr_{tgt}])^{T}\f)
@@ -61,3 +69,4 @@ namespace mvfr
 
 }
 
+#undef MVFR_GPU_API

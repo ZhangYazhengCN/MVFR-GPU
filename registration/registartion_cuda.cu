@@ -263,25 +263,33 @@ namespace mvfr
 	}
 
 
+#ifdef MVFR_GPU_EXPORTS
+#define MVFR_GPU_API __declspec(dllexport)
+#else
+#define MVFR_GPU_API __declspec(dllimport)
+#endif
+
 // transformCloudDevice 和 computeHmatrixDevice 显式实例化. 
 // @note: 不支持 (Eigen::RowMajor)
 // @note: 调整 Eigen_stdTypes 后，需修改 computeHmatrixDevice 函数
 #define Eigen_storageOrder (Eigen::ColMajor)(Eigen::AutoAlign)(Eigen::DontAlign)
 #define Eigen_stdTypes (int)(float)(double)
-#define Instantiate_transformCloudDevice(r, product) template void transformCloudDevice\
+#define Instantiate_transformCloudDevice_AND_computeHmatrixDevice(r, product) template MVFR_GPU_API void transformCloudDevice\
 <BOOST_PP_SEQ_ELEM(0, product),BOOST_PP_SEQ_ELEM(1, product)>\
 (pcl::PointXYZ* const, const std::size_t, const Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 4, BOOST_PP_SEQ_ELEM(1, product)>&);\
 \
-template void computeHmatrixDevice<BOOST_PP_SEQ_ELEM(0, product), BOOST_PP_SEQ_ELEM(1, product)>\
+template MVFR_GPU_API void computeHmatrixDevice<BOOST_PP_SEQ_ELEM(0, product), BOOST_PP_SEQ_ELEM(1, product)>\
 (const CloudDevice& source_device, const CloudDevice& target_device,\
 const CorrespondencesDevice& corr_device, const unsigned valid_corr,\
 Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 1>& centroid_src,\
 Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 1>& centroid_tgt,\
 Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 3, 3, BOOST_PP_SEQ_ELEM(1, product)>& H);
 
-	BOOST_PP_SEQ_FOR_EACH_PRODUCT(Instantiate_transformCloudDevice, (Eigen_stdTypes)(Eigen_storageOrder))
+	BOOST_PP_SEQ_FOR_EACH_PRODUCT(Instantiate_transformCloudDevice_AND_computeHmatrixDevice, (Eigen_stdTypes)(Eigen_storageOrder))
 
 #undef Instantiate_transformCloudDevice
 #undef Eigen_stdTypes
 #undef Eigen_storageOrder
 }
+
+#undef MVFR_GPU_API

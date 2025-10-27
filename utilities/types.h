@@ -36,15 +36,42 @@ namespace mvfr
 
 	/// Point3D concept, has x, y, z fields which are same arithmetic type. 
 	template<typename T>
-	concept Point3D = requires(T point) {
-		{ point.x }->ArithMeticType;
-		{ point.y }->ArithMeticType;
-		{ point.z }->ArithMeticType;
-		requires SameTypes<
-			decltype(point.x),
-			decltype(point.y),
-			decltype(point.z)>;
-	};
+    concept Point3D = requires(T point) {
+        {
+            point.x
+        }->ArithMeticType;
+        {
+            point.y
+        }->ArithMeticType;
+        {
+            point.z
+        }->ArithMeticType;
+            requires SameTypes<
+                decltype(point.x),
+                    decltype(point.y),
+                    decltype(point.z)>;
+    };
+
+    /// Normal3D concept, has normal_x, normal_y, normal_z fields which are same arithmetic type. 
+    template<typename T>
+    concept Normal3D = requires(T normal){
+        {
+            normal.normal_x
+        }->ArithMeticType;
+        {
+            normal.normal_y
+        }->ArithMeticType;
+        {
+            normal.normal_z
+        }->ArithMeticType;
+            requires SameTypes<
+                decltype(normal.normal_x),
+                    decltype(normal.normal_y),
+                    decltype(normal.normal_z)>;
+    };
+
+    template<typename T>
+    concept PointWithNormal3D = Point3D<T> && Normal3D<T>;
 #	else
 #		error "no support for concept feature in current compiler"
 #	endif
@@ -58,7 +85,7 @@ namespace mvfr
     /// GPU近邻点距离类型，first为指向GPU内存块的共享指针，second为内存块的大小
     using DistancesDevice = std::pair<std::shared_ptr<float>, std::size_t>;
 
-    /// GPU对应关系类型，源点云索引 ==> 目标点云索引 ==> 对应点距离索引 ==> 对应关系数量
+    ///  GPU对应关系类型，源点云索引 ==> 目标点云索引 ==> 对应点距离索引 ==> 对应关系数量
     using CorrespondencesDevice = std::tuple<std::shared_ptr<pcl::index_t>,
         std::shared_ptr<pcl::index_t>, std::shared_ptr<float>, std::size_t>;
 

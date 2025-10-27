@@ -70,7 +70,7 @@ namespace mvfr
 		Eigen::Transform<Scalar, 3, Eigen::Isometry> calcu_trans(final_transformation_);
 		Eigen::Transform<Scalar, 3, Eigen::Isometry> indeed_trans(ground_th);
 
-		return { std::acos(((indeed_trans.rotation() * calcu_trans.rotation().inverse()).trace() - 1) / 2),
+		return { std::acos(((indeed_trans.rotation() * calcu_trans.rotation().transpose()).trace() - 1) / 2),
 			(indeed_trans.translation() - calcu_trans.translation()).norm() };
 	}
 
@@ -87,10 +87,10 @@ namespace mvfr
 		double fitness_score = 0.0;
 		for (const auto& corr : *correspondences_)
 		{
-			if (corr.distance < +max_range)
-				fitness_score += corr.distance;
+			if (corr.distance <= max_range)
+				fitness_score += 1;
 		}
-		return fitness_score / correspondences_->size();
+		return fitness_score / input_->size();
 	}
 
 	template<typename PointSource, typename PointTarget, typename Scalar>

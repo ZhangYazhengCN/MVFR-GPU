@@ -335,7 +335,7 @@ namespace mvfr
 			template_cloud_search_ = search;
 		}
 		/// 获取模板点云
-		SearchConstPtr& getTemplateCloudSearch(void) const
+		const SearchConstPtr& getTemplateCloudSearch(void) const
 		{
 			return template_cloud_search_;
 		}

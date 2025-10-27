@@ -13,6 +13,14 @@
 
 #include <pcl/point_types.h>
 
+
+#ifdef MVFR_GPU_EXPORTS
+#define MVFR_GPU_API  __declspec(dllexport)
+#else
+#define MVFR_GPU_API  __declspec(dllimport)
+#endif
+
+
 namespace mvfr
 {
     /**
@@ -23,8 +31,8 @@ namespace mvfr
         @param[out] indices_host     CPU近邻点索引vector
         @param[out] distances_host   CPU近邻点距离vector
     **/
-    void moveIndicesAndDistances(pcl::index_t* indices_device, float* distances_device, const std::size_t size,
-        pcl::Indices& indices_host, std::vector<float>& distances_host);
+    MVFR_GPU_API void moveIndicesAndDistances(pcl::index_t* indices_device,float* distances_device,const std::size_t size,
+        pcl::Indices& indices_host,std::vector<float>& distances_host);
 
 
     /**
@@ -36,7 +44,7 @@ namespace mvfr
         @param[out] distances_host   CPU近邻点距离vector
         @param[in] stride           每个查询点近邻点数量
     **/
-    void moveIndicesAndDistances(pcl::index_t* indices_device, float* distances_device, const std::size_t size,
+    MVFR_GPU_API void moveIndicesAndDistances(pcl::index_t* indices_device, float* distances_device, const std::size_t size,
         std::vector<pcl::Indices>& indices_host, std::vector<std::vector<float>>& distances_host, const unsigned stride);
 
 
@@ -51,7 +59,9 @@ namespace mvfr
         @param[in] stride              每个查询点的最大近邻点数量
         @param[in] sorted              是否对结果进行排序
     **/
-    void calcuDistances(pcl::PointXYZ* query_cloud_device, pcl::PointXYZ* target_cloud_device,
+    MVFR_GPU_API void calcuDistances(pcl::PointXYZ* query_cloud_device, pcl::PointXYZ* target_cloud_device,
         pcl::index_t* indices_device, int* indices_sizes, float* distances_device,
         const unsigned query_cloud_size, const unsigned stride, const bool sorted = true);
 }
+
+#undef MVFR_GPU_API
