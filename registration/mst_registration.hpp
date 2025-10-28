@@ -192,7 +192,7 @@ namespace mvfr
 						cur_overlap = edge_overlap_ratio_map[*e_begin];
 					}
 
-				std::cout << "重叠区域最大的边为：" << vertex_index_map[boost::source(max_overlap_edge, *graph_)] << "<===>" << vertex_index_map[boost::target(max_overlap_edge, *graph_)] << "\n\n";
+				//std::cout << "重叠区域最大的边为：" << vertex_index_map[boost::source(max_overlap_edge, *graph_)] << "<===>" << vertex_index_map[boost::target(max_overlap_edge, *graph_)] << "\n\n";
 
 				// 2.2 对重叠率最大的边所对应的点云进行配准(vertex_index_map 序号较小的成为目标点云)
 				vertex_descriptor vertex_src =
