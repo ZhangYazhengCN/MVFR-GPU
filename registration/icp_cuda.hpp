@@ -6,7 +6,7 @@
 
 namespace mvfr
 {
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource, Point3D PointTarget, FloatingType Scalar>
 	void IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::setInputSource(const PointCloudSourceConstPtr& cloud)
 	{
 		if (cloud->points.empty())
@@ -19,12 +19,12 @@ namespace mvfr
 		source_cloud_updated_ = true;
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource, Point3D PointTarget, FloatingType Scalar>
 	void IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::setInputSourceDevice(const PointCloudSourceConstPtr& cloud, const CloudDevice& cloud_device)
 	{
 		if (cloud->points.empty() || cloud_device.first == nullptr || cloud->size() != cloud_device.second)
 		{
-			PCL_ERROR("[% s::setInputSourceDevice] 输入源点云为空或CPU与GPU点云不匹配! %s(%d)\n", getClassName().c_str(), __FILE__, __LINE__);
+			PCL_ERROR("[% s::setInputSourceDevice] 输入源点云为空或输入CPU与GPU点云数量不匹配! %s(%d)\n", getClassName().c_str(), __FILE__, __LINE__);
 			return;
 		}
 		pcl::PCLBase<PointSource>::setInputCloud(cloud);
@@ -32,7 +32,7 @@ namespace mvfr
 		source_cloud_updated_ = true;
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	void IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::setInputTarget(const PointCloudTargetConstPtr& cloud)
 	{
 		if (cloud->points.empty())
@@ -45,12 +45,12 @@ namespace mvfr
 		target_cloud_updated_ = true;
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	void IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::setInputTargetDevice(const PointCloudTargetConstPtr& cloud, const CloudDevice& cloud_device)
 	{
 		if (cloud->points.empty() || cloud_device.first == nullptr || cloud->size() != cloud_device.second)
 		{
-			PCL_ERROR("[% s::setInputTargetDevice] 输入目标点云为空! %s(%d)\n", getClassName().c_str(), __FILE__, __LINE__);
+			PCL_ERROR("[% s::setInputTargetDevice] 输入目标点云为空或输入CPU与GPU点云数量不匹配! %s(%d)\n", getClassName().c_str(), __FILE__, __LINE__);
 			return;
 		}
 		target_ = cloud;
@@ -58,7 +58,7 @@ namespace mvfr
 		target_cloud_updated_ = true;
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	std::pair<double, double> IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::getFitnessScore(const Matrix4& ground_th)
 	{
 		if (!converged_)
@@ -74,7 +74,7 @@ namespace mvfr
 			(indeed_trans.translation() - calcu_trans.translation()).norm() };
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	double IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::getFitnessScore(double max_range)
 	{
 		// 判断ICP迭代是否收敛
@@ -93,13 +93,13 @@ namespace mvfr
 		return fitness_score / input_->size();
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	void IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::align(PointCloudSource& output)
 	{
 		align(output, Matrix4::Identity());
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	void IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::align(PointCloudSource& output, const Matrix4& guess)
 	{
 		if (!initCompute())
@@ -172,7 +172,6 @@ namespace mvfr
 				break;
 			}
 
-			/// @todo 异步更新  correspoondences_ 和  update_visualizer
 			// 更新 correspoondences_
 			cudaSafeCall(cudaMemcpy(corr_src_host_ptr.get(), std::get<0>(correspondences_device_).get(), corr_num * sizeof(pcl::index_t), cudaMemcpyDeviceToHost));
 			cudaSafeCall(cudaMemcpy(corr_tgt_host_ptr.get(), std::get<1>(correspondences_device_).get(), corr_num * sizeof(pcl::index_t), cudaMemcpyDeviceToHost));
@@ -182,22 +181,10 @@ namespace mvfr
 			for (int i = 0; i < corr_num; ++i)
 				(*correspondences_)[i] = pcl::Correspondence(corr_src_host_ptr.get()[i], corr_tgt_host_ptr.get()[i], corr_dis_host_ptr.get()[i]);
 
-			//// 更新PCLVisualizer可视化回调函数
-			//if (update_visualizer_ != nullptr) {
-			//	pcl::Indices source_indices_good, target_indices_good;
-			//	for (const Correspondence& corr : *correspondences_) {
-			//		source_indices_good.emplace_back(corr.index_query);
-			//		target_indices_good.emplace_back(corr.index_match);
-			//	}
-			//	update_visualizer_(
-			//		*input_transformed, source_indices_good, *target_, target_indices_good);
-			//}
-
-
 			// 计算 correlation matrix H = corr_src_points * corr_tgt_points'
 			Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
 			Eigen::Matrix<Scalar, 3, 3> H;
-			computeHmatrixDevice(aligned_cloud_device_, target_device_, correspondences_device_, corr_num, centroid_src, centroid_tgt, H);
+            computeICPMatrixDevice(aligned_cloud_device_, target_device_, correspondences_device_, corr_num, centroid_src, centroid_tgt, H);
 
 			// 对H矩阵进行奇异值分解
 			Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd(
@@ -222,6 +209,20 @@ namespace mvfr
 
 			// 更新final_transformation_ (transformation是基于全局坐标系求得的，所以用左乘)
 			final_transformation_ = transformation_ * final_transformation_;
+
+            /// @todo 异步更新 update_visualizer
+            // 更新PCLVisualizer可视化回调函数
+            if(update_visualizer_ != nullptr) {
+                pcl::Indices source_indices_good,target_indices_good;
+                for(const pcl::Correspondence& corr : *correspondences_) {
+                    source_indices_good.emplace_back(corr.index_query);
+                    target_indices_good.emplace_back(corr.index_match);
+                }
+                pcl::PointCloud<PointSource> input_transformed;
+                pcl::transformPointCloud(*input_,input_transformed,final_transformation_);
+                update_visualizer_(
+                    input_transformed,source_indices_good,*target_,target_indices_good);
+            }
 
 			++nr_iterations_;
 			converged_ = static_cast<bool>((*convergence_criteria_));
@@ -263,7 +264,7 @@ namespace mvfr
 		deinitCompute();
 	}
 
-	template<typename PointSource, typename PointTarget, typename Scalar>
+    template<Point3D PointSource,Point3D PointTarget,FloatingType Scalar>
 	bool IterativeClosestPointCuda<PointSource, PointTarget, Scalar>::initCompute()
 	{
 		if (!target_)
@@ -320,9 +321,7 @@ namespace mvfr
 				target_device_.second = cloud_temp->size();
 			}
 
-			if (!force_no_recompute_)
-				tree_->setInputCloud(target_device_);
-
+			tree_->setInputCloud(target_device_);
 			target_cloud_updated_ = false;
 		}
 

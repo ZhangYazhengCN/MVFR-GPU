@@ -232,13 +232,13 @@ namespace mvfr
 			return false;
 
 
-		//const auto begin = std::chrono::system_clock::now();
+		const auto begin = std::chrono::system_clock::now();
 		// 构建邻接关系图
 		if (build_graph_ && !buildGraph())
 			return false;
-		//const auto end = std::chrono::system_clock::now();
+		const auto end = std::chrono::system_clock::now();
 
-		//std::cout << "建图用时:" << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin) << '\n';
+		std::cout << "\n多视图点云邻接关系图构建用时:" << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin) << '\n';
 
 
 		// 检查配准方法是否正确设置

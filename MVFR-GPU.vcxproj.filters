@@ -72,6 +72,12 @@
     <ClInclude Include="registration\sequential_registration.h">
       <Filter>registration</Filter>
     </ClInclude>
+    <ClInclude Include="registration\nicp_cuda.h">
+      <Filter>registration</Filter>
+    </ClInclude>
+    <ClInclude Include="registration\nicp_cuda.hpp">
+      <Filter>registration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="search\search_cuda.cu">

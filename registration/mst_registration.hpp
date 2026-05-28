@@ -90,6 +90,19 @@ namespace mvfr
 					return false;
 				}
 
+            std::cout << "#########################################################################\n";
+            printGraph();
+            std::cout << "\n\n";
+
+            std::cout<<"最小生成树\n父节点：";
+            for(int i = 1; i < predecessor_map.size(); ++i)
+                std::cout<<vertex_index_map[predecessor_map[i]]<<' ';
+            std::cout<<"子节点：";
+            for(int i = 1; i < predecessor_map.size(); ++i)
+                std::cout<<i<<' ';
+            std::cout << "#########################################################################\n";
+
+
 			// ----------------------------------------- 3. 执行多视图配准 -------------------------------------------
 			// 流程参考（优先级队列 -> 先进先出队列） https://www.boost.org/doc/libs/1_86_0/libs/graph/doc/prim_minimum_spanning_tree.html 伪代码
 			pcl::copyPointCloud(*(clouds_[0]), *full_cloud_);
@@ -100,20 +113,9 @@ namespace mvfr
 				target_queue.pop_front();
 
 				// 设置精配准算法 registration_ 的目标点云
-				if constexpr (std::is_same_v<Registration, IterativeClosestPointCuda<PointT, PointT, Scalar>>)
-				{
-					// 若采用 ICPCuda ，则检查搜索树的主机点云是否已加载至GPU（若未加载至GPU，则执行icp需要对搜索树进行重建）
-					if (searchs_[cur_tgt_id]->getInputDevice().first == nullptr)
-					{
-						registration_->setSearchMethodTarget(searchs_[cur_tgt_id]);
-						registration_->setInputTarget(clouds_[cur_tgt_id]);
-					}
-					else
-					{
-						registration_->setSearchMethodTarget(searchs_[cur_tgt_id], true);
-						registration_->setInputTargetDevice(clouds_[cur_tgt_id], searchs_[cur_tgt_id]->getInputDevice());
-					}
-				}
+                if constexpr(std::is_base_of_v<IterativeClosestPointCuda<PointT,PointT,Scalar>,Registration>)
+                    // 若采用 ICPCuda 及其派生类，直接重置搜索树即可，函数内部会自动对目标点云更新
+                    registration_->setSearchMethodTarget(searchs_[cur_tgt_id]);
 				else
 				{
 					registration_->setSearchMethodTarget(searchs_[cur_tgt_id], true);
@@ -172,11 +174,9 @@ namespace mvfr
 			unsigned counter = 0;
 			while (boost::num_edges(*graph_) != 0)
 			{
-				//std::cout << "############################### 第" << ++counter << "次配准#####################################\n";
-
-				//std::cout << "\n\n";
-				//printGraph();
-				//std::cout << "\n\n";
+				std::cout << "############################### 第" << ++counter << "次配准#####################################\n";
+				printGraph();
+				std::cout << "\n\n";
 
 
 				// 2.1 寻找目前重叠率最大的边
@@ -192,7 +192,7 @@ namespace mvfr
 						cur_overlap = edge_overlap_ratio_map[*e_begin];
 					}
 
-				//std::cout << "重叠区域最大的边为：" << vertex_index_map[boost::source(max_overlap_edge, *graph_)] << "<===>" << vertex_index_map[boost::target(max_overlap_edge, *graph_)] << "\n\n";
+				std::cout << "重叠区域最大的边为：" << vertex_index_map[boost::source(max_overlap_edge, *graph_)] << "<===>" << vertex_index_map[boost::target(max_overlap_edge, *graph_)] << "\n\n";
 
 				// 2.2 对重叠率最大的边所对应的点云进行配准(vertex_index_map 序号较小的成为目标点云)
 				vertex_descriptor vertex_src =

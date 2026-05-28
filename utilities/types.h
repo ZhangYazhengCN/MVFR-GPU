@@ -79,6 +79,9 @@ namespace mvfr
     /// GPU点云类型，first为指向GPU内存块的共享指针，second为内存块的大小
     using CloudDevice = std::pair<std::shared_ptr<pcl::PointXYZ>, std::size_t>;
 
+    /// GPU法向量类型，first为指向GPU内存块的共享指针，second为内存块的大小
+    using NormalDevice = std::pair<std::shared_ptr<pcl::Normal>, std::size_t>;
+
     /// GPU近邻点索引类型，first为指向GPU内存块的共享指针，second为内存块的大小
     using IndicesDevice = std::pair<std::shared_ptr<pcl::index_t>, std::size_t>;
 

@@ -126,6 +126,7 @@
     </Link>
     <CudaCompile>
       <AdditionalOptions>--extended-lambda --expt-relaxed-constexpr %(AdditionalOptions)</AdditionalOptions>
+      <CodeGeneration>%(CodeGeneration)</CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,6 +150,7 @@
     </Link>
     <CudaCompile>
       <AdditionalOptions>--extended-lambda --expt-relaxed-constexpr %(AdditionalOptions)</AdditionalOptions>
+      <CodeGeneration>%(CodeGeneration)</CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -159,6 +161,8 @@
     <ClInclude Include="registration\mst_registration.hpp" />
     <ClInclude Include="registration\multiview_registration.h" />
     <ClInclude Include="registration\multiview_registration.hpp" />
+    <ClInclude Include="registration\nicp_cuda.h" />
+    <ClInclude Include="registration\nicp_cuda.hpp" />
     <ClInclude Include="registration\pose_graph_optim.h" />
     <ClInclude Include="registration\registration_cuda.cuh" />
     <ClInclude Include="registration\sequential_registration.h" />

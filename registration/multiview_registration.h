@@ -106,8 +106,7 @@ namespace mvfr
 			use_template_blade_(use_template),
 			overlap_adj_point_dis_(overlap_adj_point_dis),
 			overlap_ratio_th_(overlap_th)
-		{
-		}
+		{}
 
 		virtual ~MultiViewRegistrationBase() = default;
 

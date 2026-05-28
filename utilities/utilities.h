@@ -234,8 +234,8 @@ namespace mvfr
 
 		double dis = 0.0;
 		for (const auto& d : distances_temp)
-			dis += d[1];
-		return std::sqrt(dis / cloud->size());
+			dis += std::sqrt(d[1]);
+		return dis / cloud->size();
 	}
 
 

@@ -102,7 +102,7 @@ namespace mvfr
 		virtual void approxNearestSearch(const CloudDevice& query_cloud_device, IndicesDevice& indices, DistancesDevice& distances) const override;
 
 
-	protected:
+	public:
 		using SearchCuda<PointT>::initSearchCuda;
 		using SearchCuda<PointT>::deinitSearchCuda;
 

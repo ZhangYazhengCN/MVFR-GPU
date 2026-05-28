@@ -49,7 +49,7 @@ namespace mvfr
         CorrespondencesDevice& corr_device,const float th);
 
 	/**
-	 *  @brief  基于源点云与目标点云的对应关系计算H矩阵，\f(H = (source-centroid_{src})[corr_{src}]*((target-centroid_{tgt})[corr_{tgt}])^{T}\f)
+	 *  @brief  基于源点云与目标点云的对应关系计算协方差矩阵，\f(H = (source-centroid_{src})[corr_{src}]*((target-centroid_{tgt})[corr_{tgt}])^{T}\f)
 	 *  @tparam Scalar        数据类型
 	 *  @tparam StorageOrder  H矩阵的内存顺序
 	 *  @param[in]  source_device GPU源点云
@@ -58,14 +58,30 @@ namespace mvfr
 	 *  @param[in]  valid_corr    对应关系的数量
 	 *  @param[out] centroid_src  源点云质心
 	 *  @param[out] centroid_tgt  目标点云质心
-	 *  @param[out] H             H矩阵
+	 *  @param[out] H             协方差矩阵
 	 */
 	template<typename Scalar = double, int StorageOrder = Eigen::ColMajor>
-	void computeHmatrixDevice(const CloudDevice& source_device, const CloudDevice& target_device,
+	void computeICPMatrixDevice(const CloudDevice& source_device, const CloudDevice& target_device,
 		const CorrespondencesDevice& corr_device, const unsigned valid_corr,
 		Eigen::Matrix<Scalar, 4, 1>& centroid_src,
 		Eigen::Matrix<Scalar, 4, 1>& centroid_tgt,
 		Eigen::Matrix<Scalar, 3, 3, StorageOrder>& H);
+
+    /**
+     * @brief 基于源点云与目标点云(及其法向量)的对应关系计算NICP位姿求解所需的 \a ATA 矩阵与 \a ATb 向量，
+     * 参考pcl::TransformationEstimationPointToPlaneLLS::estimateRigidTransformation定义.
+     * 
+     * @param source_device GPU源点云
+     * @param target_device GPU目标点云
+     * @param target_normal_device GPU目标点云法向量
+     * @param corr_device 源点云与目标点云对应关系
+     * @param valid_corr 对应关系的数量
+     * @param ATA 
+     * @param ATb 
+     */
+    MVFR_GPU_API void computeNICPMatrixDevice(const CloudDevice& source_device,const CloudDevice& target_device,const NormalDevice& target_normal_device,
+        const CorrespondencesDevice& corr_device,const unsigned valid_corr,
+        Eigen::Matrix<double,6,6>& ATA,Eigen::Vector<double,6>& ATb);
 
 }
 

@@ -3,8 +3,8 @@
 
 #include <boost/preprocessor/seq.hpp>
 #include <cuda_runtime.h>
+#include <sm_60_atomic_functions.h>
 #include <device_launch_parameters.h>
-#include <cuda_fp16.h>
 #include <vector_functions.h>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
@@ -17,6 +17,7 @@
 
 #include "../utilities/cuda_utilities.h"
 #include "registration_cuda.cuh"
+
 
 namespace mvfr
 {
@@ -95,7 +96,7 @@ namespace mvfr
 
 	// @todo 异步cudastream 优化内存释放与其它操作
 	template<typename Scalar, int StorageOrder>
-	void computeHmatrixDevice(const CloudDevice& source_device, const CloudDevice& target_device,
+	void computeICPMatrixDevice(const CloudDevice& source_device, const CloudDevice& target_device,
 		const CorrespondencesDevice& corr_device, const unsigned valid_corr,
 		Eigen::Matrix<Scalar, 4, 1>& centroid_src,
 		Eigen::Matrix<Scalar, 4, 1>& centroid_tgt,
@@ -175,10 +176,6 @@ namespace mvfr
 		cudaSafeCall(cudaFree(centroid_tgt_device_ptr));
 
 		// --------------------------------- 4. 计算H矩阵 ---------------------------------
-		// 分配H矩阵GPU内存
-		Scalar* H_device_ptr;
-		cudaSafeCall(cudaMalloc(&H_device_ptr, 9 * sizeof(Scalar)));
-
 		// 分配计算过程中间矩阵GPU内存
 		using Matrix4_4Type = cuda::std::tuple<PointType4_, PointType4_, PointType4_, PointType4_>;
 		Matrix4_4Type* matrix_4_4_ptr;
@@ -257,11 +254,80 @@ namespace mvfr
 
 		// ------------------------------- 5. 释放申请的GPU内存 ------------------------------
 		cudaSafeCall(cudaFree(matrix_4_4_ptr));
-		cudaSafeCall(cudaFree(H_device_ptr));
 		cudaSafeCall(cudaFree(corr_src_points_ptr));
 		cudaSafeCall(cudaFree(corr_tgt_points_ptr));
 	}
 
+    void computeNICPMatrixDevice(const CloudDevice & source_device,const CloudDevice & target_device,const NormalDevice & target_normal_device,
+        const CorrespondencesDevice & corr_device,const unsigned valid_corr,Eigen::Matrix<double,6,6>& ATA,Eigen::Vector<double,6>& ATb)
+    {
+        pcl::PointXYZ* src_points_ptr = source_device.first.get(),* tgt_points_ptr = target_device.first.get();
+        pcl::Normal* tgt_normals_ptr = target_normal_device.first.get();
+        pcl::index_t* corr_src_indices_ptr = std::get<0>(corr_device).get(),* corr_tgt_indices_ptr = std::get<1>(corr_device).get();
+
+        float* device_data_ptr;
+        cudaSafeCall(cudaMalloc(&device_data_ptr,42*sizeof(float)));
+        cudaSafeCall(cudaMemset(device_data_ptr,0,42*sizeof(float)));
+
+        thrust::for_each(thrust::device, thrust::counting_iterator<unsigned>(0),thrust::counting_iterator<unsigned>(valid_corr),[=] __device__ (const unsigned& i){
+            const float& sx = src_points_ptr[corr_src_indices_ptr[i]].x;
+            const float& sy = src_points_ptr[corr_src_indices_ptr[i]].y;
+            const float& sz = src_points_ptr[corr_src_indices_ptr[i]].z;
+            const float& dx = tgt_points_ptr[corr_tgt_indices_ptr[i]].x;
+            const float& dy = tgt_points_ptr[corr_tgt_indices_ptr[i]].y;
+            const float& dz = tgt_points_ptr[corr_tgt_indices_ptr[i]].z;
+            const float& nx = tgt_normals_ptr[corr_tgt_indices_ptr[i]].normal_x;
+            const float& ny = tgt_normals_ptr[corr_tgt_indices_ptr[i]].normal_y;
+            const float& nz = tgt_normals_ptr[corr_tgt_indices_ptr[i]].normal_z;
+
+            float a = nz * sy - ny * sz;
+            float b = nx * sz - nz * sx;
+            float c = ny * sx - nx * sy;
+            atomicAdd(&device_data_ptr[0],a*a);
+            atomicAdd(&device_data_ptr[1],a*b);
+            atomicAdd(&device_data_ptr[2],a*c);
+            atomicAdd(&device_data_ptr[3],a*nx);
+            atomicAdd(&device_data_ptr[4],a*ny);
+            atomicAdd(&device_data_ptr[5],a*nz);
+            atomicAdd(&device_data_ptr[7],b*b);
+            atomicAdd(&device_data_ptr[8],b*c);
+            atomicAdd(&device_data_ptr[9],b*nx);
+            atomicAdd(&device_data_ptr[10],b*ny);
+            atomicAdd(&device_data_ptr[11],b*nz);
+            atomicAdd(&device_data_ptr[14],c*c);
+            atomicAdd(&device_data_ptr[15],c*nx);
+            atomicAdd(&device_data_ptr[16],c*ny);
+            atomicAdd(&device_data_ptr[17],c*nz);
+            atomicAdd(&device_data_ptr[21],nx*nx);
+            atomicAdd(&device_data_ptr[22],nx*ny);
+            atomicAdd(&device_data_ptr[23],nx*nz);
+            atomicAdd(&device_data_ptr[28],ny*ny);
+            atomicAdd(&device_data_ptr[29],ny*nz);
+            atomicAdd(&device_data_ptr[35],nz*nz);
+
+            float d = nx * dx + ny * dy + nz * dz - nx * sx - ny * sy - nz * sz;
+            atomicAdd(&device_data_ptr[36],a*d);
+            atomicAdd(&device_data_ptr[37],b*d);
+            atomicAdd(&device_data_ptr[38],c*d);
+            atomicAdd(&device_data_ptr[39],nx*d);
+            atomicAdd(&device_data_ptr[40],ny*d);
+            atomicAdd(&device_data_ptr[41],nz*d);
+        });
+
+
+        // 将GPU中计算的结果 device_data_ptr 拷贝至 ATA 和 ATb 内
+        std::array<float,42> host_data_ptr;
+        cudaSafeCall(cudaMemcpy(host_data_ptr.data(),device_data_ptr,42*sizeof(float),cudaMemcpyDeviceToHost));
+        for(int i = 0; i<6; ++i)
+        {
+            for(int j = i; j<6; ++j)
+            {
+                ATA(i,j)= ATA(j,i) = host_data_ptr[i*6+j];
+            }
+            ATb[i] = host_data_ptr[i+36];
+        }
+        cudaSafeCall(cudaFree(device_data_ptr));
+    }
 
 #ifdef MVFR_GPU_EXPORTS
 #define MVFR_GPU_API __declspec(dllexport)
@@ -278,14 +344,14 @@ namespace mvfr
 <BOOST_PP_SEQ_ELEM(0, product),BOOST_PP_SEQ_ELEM(1, product)>\
 (pcl::PointXYZ* const, const std::size_t, const Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 4, BOOST_PP_SEQ_ELEM(1, product)>&);\
 \
-template MVFR_GPU_API void computeHmatrixDevice<BOOST_PP_SEQ_ELEM(0, product), BOOST_PP_SEQ_ELEM(1, product)>\
-(const CloudDevice& source_device, const CloudDevice& target_device,\
-const CorrespondencesDevice& corr_device, const unsigned valid_corr,\
-Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 1>& centroid_src,\
-Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 1>& centroid_tgt,\
-Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 3, 3, BOOST_PP_SEQ_ELEM(1, product)>& H);
+template MVFR_GPU_API void computeICPMatrixDevice<BOOST_PP_SEQ_ELEM(0, product), BOOST_PP_SEQ_ELEM(1, product)>\
+(const CloudDevice&, const CloudDevice&,\
+const CorrespondencesDevice&, const unsigned,\
+Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 1>&,\
+Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 4, 1>&,\
+Eigen::Matrix<BOOST_PP_SEQ_ELEM(0, product), 3, 3, BOOST_PP_SEQ_ELEM(1, product)>&);
 
-	BOOST_PP_SEQ_FOR_EACH_PRODUCT(Instantiate_transformCloudDevice_AND_computeHmatrixDevice, (Eigen_stdTypes)(Eigen_storageOrder))
+BOOST_PP_SEQ_FOR_EACH_PRODUCT(Instantiate_transformCloudDevice_AND_computeHmatrixDevice, (Eigen_stdTypes)(Eigen_storageOrder))
 
 #undef Instantiate_transformCloudDevice
 #undef Eigen_stdTypes

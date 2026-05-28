@@ -21,6 +21,7 @@
 #include <pcl/correspondence.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/default_convergence_criteria.h>
+#include <pcl/visualization/pcl_visualizer.h>
 
 #include "../search/search_cuda.h"
 #include "../search/octree_cuda.h"
@@ -38,7 +39,7 @@ namespace mvfr
      *
      *  @note 由于本算法实质上是 point-to-point icp 算法，因此算法仅要求目标点云与源点云中存在 xyz 字段. 如果存在其它字段的信息，则输出结果时保持不变
      */
-    template<typename PointSource, typename PointTarget, typename Scalar = double>
+    template<Point3D PointSource, Point3D PointTarget, FloatingType Scalar = double>
     class IterativeClosestPointCuda : public pcl::PCLBase<PointSource>
     {
     public:
@@ -57,10 +58,7 @@ namespace mvfr
         using Search = SearchCuda<PointTarget>;
         using SearchPtr = typename Search::Ptr;
         using KdTree = OcTreeCuda<PointTarget>;      // as the uniform interface with pcl::Registration::KdTree
-
-        using TransformationEstimation = typename pcl::registration::TransformationEstimation<PointSource, PointTarget, Scalar>;
-        using TransformationEstimationPtr = typename TransformationEstimation::Ptr;
-        using TransformationEstimationConstPtr = typename TransformationEstimation::ConstPtr;
+        using KdTreePtr = typename KdTree::Ptr;
 
         using UpdateVisualizerCallbackSignature = void(const pcl::PointCloud<PointSource>&,
             const pcl::Indices&,
@@ -131,21 +129,40 @@ namespace mvfr
 
         /**
          * @brief 设置目标点云搜索树.
-         *
          * @param tree 目标点云搜索树
-         * @param force_no_recompute 是否禁止通过输入目标点云更新搜索树
-         *
-         * @note 当 force_no_recompute == true 时，必须确保输入参数 \c tree 内存在正确的目标点云与设备点云
-         *
-         * @warning 注意 OcTreeCuda 设备点云的手动设置
          */
-        inline void setSearchMethodTarget(const SearchPtr& tree, bool force_no_recompute = false)
+        inline void setSearchMethodTarget(const SearchPtr& tree)
         {
             tree_ = tree;
-            force_no_recompute_ = force_no_recompute;
-            // Since we just set a new tree, we need to check for updates
+            if(tree->getInputCloud())
+            {
+                if(tree->getInputDevice().first)
+                {
+                    setInputTargetDevice(tree->getInputCloud(),tree->getInputDevice());
+                    target_cloud_updated_ = false;
+                    return;
+                }
+                setInputTarget(tree->getInputCloud());
+            }
             target_cloud_updated_ = true;
         }
+        ///**
+        // * @brief 设置目标点云搜索树.
+        // *
+        // * @param tree 目标点云搜索树
+        // * @param force_no_recompute 是否禁止通过输入目标点云更新搜索树
+        // *
+        // * @note 当 force_no_recompute == true 时，必须确保输入参数 \c tree 内存在正确的目标点云与设备点云
+        // *
+        // * @warning 注意 OcTreeCuda 设备点云的手动设置
+        // */
+        //inline void setSearchMethodTarget(const SearchPtr& tree, bool force_no_recompute = false)
+        //{
+        //    tree_ = tree;
+        //    force_no_recompute_ = force_no_recompute;
+        //    // Since we just set a new tree, we need to check for updates
+        //    target_cloud_updated_ = true;
+        //}
 
         /// 获取搜索树（目标点云）
         inline SearchPtr& getSearchMethodTarget() const
@@ -165,11 +182,6 @@ namespace mvfr
             return (corr_dist_threshold_);
         }
 
-        ///// 设置ICPCuda的目标函数（变换矩阵计算方法）
-        //void setTransformationEstimation(const TransformationEstimationPtr& te)
-        //{
-        //    transformation_estimation_ = te;
-        //}
 
         /// 获取ICPCuda最终计算的变换矩阵
         inline const Matrix4& getFinalTransformation() const
@@ -231,13 +243,29 @@ namespace mvfr
             return (euclidean_fitness_epsilon_);
         }
 
+        /// 默认可视化回调函数
+        static void defaultVisualizationCallback(const pcl::PointCloud<PointSource>& src,
+            const pcl::Indices& src_indices,
+            const pcl::PointCloud<PointTarget>& tgt,
+            const pcl::Indices& tgt_indices)
+        {
+            pcl::visualization::PCLVisualizer view("ICP-Viewer");
+            view.addPointCloud<PointSource>(std::make_shared<pcl::PointCloud<PointSource>>(src),"ICP_src");
+            view.addPointCloud<PointTarget>(std::make_shared<pcl::PointCloud<PointTarget>>(tgt),"ICP_tgt");
+            view.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,1.0,0.0,0.0,"ICP_src");
+            view.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,0.0,1.0,0.0,"ICP_tgt");
+            view.spin();
+        }
+
+
         /// 设置PCLVisualizer可视化回调函数
-        inline bool registerVisualizationCallback(std::function<UpdateVisualizerCallbackSignature>& visualizerCallback)
+        inline bool registerVisualizationCallback(const std::function<UpdateVisualizerCallbackSignature>& visualizerCallback = IterativeClosestPointCuda::defaultVisualizationCallback)
         {
             if (visualizerCallback) {
                 update_visualizer_ = visualizerCallback;
                 pcl::Indices indices;
-                update_visualizer_(*input_, indices, *target_, indices);
+                if(input_ && target_)
+                    update_visualizer_(*input_, indices, *target_, indices);
                 return (true);
             }
             return (false);
@@ -296,7 +324,7 @@ namespace mvfr
          *  @param output 变换后的源点云
          *  @param guess  初始位姿
          */
-        inline void align(PointCloudSource& output, const Matrix4& guess);
+        virtual inline void align(PointCloudSource& output, const Matrix4& guess);
 
         /// 获取GPU上配准后的源点云
         inline CloudDevice& const getAlignedCloudDevice(void) const
@@ -317,7 +345,7 @@ namespace mvfr
         }
 
         /// 配准初始化函数
-        bool initCompute();
+        virtual bool initCompute();
         using pcl::PCLBase<PointSource>::deinitCompute;
 
     protected:
@@ -338,14 +366,13 @@ namespace mvfr
         double corr_dist_threshold_;
         bool target_cloud_updated_{ true };
         bool source_cloud_updated_{ true };
-        bool force_no_recompute_{ false };   //!< 是否禁止更新搜索树
+        //bool force_no_recompute_{ false };   //!< 是否禁止更新搜索树
 
         pcl::CorrespondencesPtr correspondences_;
         CorrespondencesDevice correspondences_device_;
         unsigned int min_number_correspondences_{ 3 };   //!< 计算刚性变换所需的最小对应关系数量
 
         // -------------------------- TransformEstimation --------------------------
-        //TransformationEstimationPtr transformation_estimation_;
         Matrix4 final_transformation_;   //!< ICPCuda计算的最终变换矩阵
         Matrix4 transformation_;     //!< 本次迭代计算的变换矩阵
         Matrix4 previous_transformation_;    //!< 上次迭代计算的变换矩阵
